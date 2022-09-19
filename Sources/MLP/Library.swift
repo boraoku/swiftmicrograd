@@ -26,9 +26,8 @@ public class Value: CustomStringConvertible {
         let out = Value(self.data + other.data, [self, other],"+")
 
         func _backward() {
-            print("topla print\(self) \(other)")
-            self.grad = 1.0 * out.grad
-            other.grad = 1.0 * out.grad
+            self.grad += 1.0 * out.grad
+            other.grad += 1.0 * out.grad
         }
 
         out._backward = _backward
@@ -40,9 +39,8 @@ public class Value: CustomStringConvertible {
         let out = Value(self.data * other.data, [self, other],"*")
 
         func _backward() {
-            print("cirp")
-            self.grad = other.data * out.grad
-            other.grad = self.data * out.grad
+            self.grad += other.data * out.grad
+            other.grad += self.data * out.grad
         }
 
         out._backward = _backward
@@ -56,7 +54,7 @@ public class Value: CustomStringConvertible {
         let out = Value(t , [self], "α") //α stands for tanh
         
         func _backward() {
-            self.grad = (1 - pow(t,2.0)) * out.grad
+            self.grad += (1 - pow(t,2.0)) * out.grad
         }
 
         out._backward = _backward

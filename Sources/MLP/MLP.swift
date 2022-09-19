@@ -218,5 +218,14 @@ public struct MLP {
 
         o.backward()
         print(o.drawDot())
+
+        print("\n")
+
+        let aa = Value(3.0, label: "aa")
+        let bb = aa + aa
+        bb.label = "bb"
+        bb.backward()
+        print(bb.drawDot())
+
     }
 }
