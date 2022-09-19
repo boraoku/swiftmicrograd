@@ -13,7 +13,21 @@ public struct Value: CustomStringConvertible {
         self.op = op
         self.label = label
     }
+    
+    static func +(lhs: Value, rhs: Value) -> Value {
+        return Value(lhs.data + rhs.data, [lhs, rhs],"+")
+    }
+    
+    static func *(lhs: Value, rhs: Value) -> Value {
+        return Value(lhs.data * rhs.data, [lhs, rhs],"*")
+    }
 
+    public func tanh() -> Value {
+        let x: Double = self.data
+        let t: Double = ( exp(2.0*x) - 1.0 ) / ( exp(2.0*x) + 1.0)
+        return Value(t , [self], "α") //α stands for tanh
+    }
+    
     public func drawDot(_ level:Int = 0) -> String {
 
         let spacing = String(repeating: " |", count: level)
@@ -36,20 +50,6 @@ public struct Value: CustomStringConvertible {
         }
 
         return drawResult
-    }
-    
-    static func +(lhs: Value, rhs: Value) -> Value {
-        return Value(lhs.data + rhs.data, [lhs, rhs],"+")
-    }
-    
-    static func *(lhs: Value, rhs: Value) -> Value {
-        return Value(lhs.data * rhs.data, [lhs, rhs],"*")
-    }
-
-    public func tanh() -> Value {
-        let x: Double = self.data
-        let t: Double = ( exp(2.0*x) - 1.0 ) / ( exp(2.0*x) + 1.0)
-        return Value(t , [self], "α") //α stands for tanh
     }
     
     public var description: String {
