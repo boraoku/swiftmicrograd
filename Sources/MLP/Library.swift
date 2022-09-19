@@ -10,7 +10,7 @@ public class Value: CustomStringConvertible {
     var prev: [Value]
     var op: String
     var label: String
-    var backward: () -> () = lambda
+    var _backward: () -> () = lambda
     var topoVisited: Bool = false
 
     init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "", _ grad: Double = 0.0 ) {
@@ -25,13 +25,13 @@ public class Value: CustomStringConvertible {
     
         let out = Value(self.data + other.data, [self, other],"+")
 
-        func backward() {
+        func _backward() {
             print("topla print\(self) \(other)")
             self.grad = 1.0 * out.grad
             other.grad = 1.0 * out.grad
         }
 
-        out.backward = backward
+        out._backward = _backward
         return out
     }
 
@@ -39,13 +39,13 @@ public class Value: CustomStringConvertible {
 
         let out = Value(self.data * other.data, [self, other],"*")
 
-        func backward() {
+        func _backward() {
             print("cirp")
             self.grad = other.data * out.grad
             other.grad = self.data * out.grad
         }
 
-        out.backward = backward
+        out._backward = _backward
         return out
     }
 
@@ -55,12 +55,33 @@ public class Value: CustomStringConvertible {
 
         let out = Value(t , [self], "α") //α stands for tanh
         
-        func backward() {
+        func _backward() {
             self.grad = (1 - pow(t,2.0)) * out.grad
         }
 
-        out.backward = backward
+        out._backward = _backward
         return out
+    }
+
+    public func backward() {
+        var topo :[Value] = []
+
+        func buildTopo(_ v:Value) {
+            if !v.topoVisited {
+                v.topoVisited = true
+                for child in v.prev {
+                    buildTopo(child)
+                }
+                topo.append(v)
+            }
+        }
+
+        buildTopo(self)
+
+        self.grad = 1.0
+        for node in topo.reversed() {
+            node._backward()
+        }
     }
     
     public func drawDot(_ level:Int = 0) -> String {
