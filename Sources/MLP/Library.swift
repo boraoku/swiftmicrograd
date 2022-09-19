@@ -1,31 +1,65 @@
 import Foundation
 
-public struct Value: CustomStringConvertible {
-    var data, grad: Double
+private func lambda() {
+    return
+}
+
+public class Value: CustomStringConvertible {
+    var data: Double
+    var grad: Double
     var prev: [Value]
     var op: String
     var label: String
-    
-    init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "") {
+    var backward: () -> () = lambda
+
+    init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "", _ grad: Double = 0.0 ) {
         self.data = data
-        self.grad = 0.0
+        self.grad = grad
         self.prev = children
         self.op = op
         self.label = label
     }
+
+    static func +(self: Value, other: Value) -> Value {
     
-    static func +(lhs: Value, rhs: Value) -> Value {
-        return Value(lhs.data + rhs.data, [lhs, rhs],"+")
+        let out = Value(self.data + other.data, [self, other],"+")
+
+        func backward() {
+            print("topla print\(self) \(other)")
+            self.grad = 1.0 * out.grad
+            other.grad = 1.0 * out.grad
+        }
+
+        out.backward = backward
+        return out
     }
-    
-    static func *(lhs: Value, rhs: Value) -> Value {
-        return Value(lhs.data * rhs.data, [lhs, rhs],"*")
+
+    static func *(self: Value, other: Value) -> Value {
+
+        let out = Value(self.data * other.data, [self, other],"*")
+
+        func backward() {
+            print("cirp")
+            self.grad = other.data * out.grad
+            other.grad = self.data * out.grad
+        }
+
+        out.backward = backward
+        return out
     }
 
     public func tanh() -> Value {
         let x: Double = self.data
         let t: Double = ( exp(2.0*x) - 1.0 ) / ( exp(2.0*x) + 1.0)
-        return Value(t , [self], "α") //α stands for tanh
+
+        let out = Value(t , [self], "α") //α stands for tanh
+        
+        func backward() {
+            self.grad = (1 - pow(t,2.0)) * out.grad
+        }
+
+        out.backward = backward
+        return out
     }
     
     public func drawDot(_ level:Int = 0) -> String {
@@ -51,7 +85,7 @@ public struct Value: CustomStringConvertible {
 
         return drawResult
     }
-    
+
     public var description: String {
         return "Value(data=\(self.data))"
     }
