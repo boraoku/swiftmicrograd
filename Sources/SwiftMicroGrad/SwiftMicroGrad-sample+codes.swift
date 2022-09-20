@@ -1,5 +1,5 @@
 @main
-public struct MLP {
+public struct SwiftMicroGrad {
 
     static var run01: Bool = false
     public static func main() {
@@ -213,7 +213,7 @@ public struct MLP {
         //------------------------------- MARK: 05 NN backward propagation inside the Value class -----------------------------
         //---------------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------
-        /*
+        
         let x1 = Value (2.0, label: "x1")
         let x2 = Value (0.0, label: "x2")
         
