@@ -10,15 +10,23 @@ public class Neuron {
     }
 
     public func feed(_ x:[Double]) -> Value {
-        var sumproduct = 0.0
+        let xValue: [Value] = x.map { Value($0) }
+        return self.feed(xValue)
+    }
+
+    public func feed(_ x:[Value]) -> Value {
+        var sumproduct = Value(0.0)
         for (wi, xi) in zip(self.w, x) {
-            sumproduct += wi.data * xi
+            sumproduct = sumproduct + wi * xi
         }
 
-        let act = Value(sumproduct) + self.b
+        let act = sumproduct + self.b
         let out = act.tanh()
-        //print("processed neuron")
         return out
+    }
+
+    public func parameters() -> [Value] {
+        return self.w + [self.b]
     }
 }
 
@@ -30,9 +38,22 @@ public class Layer {
     }
 
     public func feed(_ x:[Double]) -> [Value] {
-        //print("processed layer")
+        let xValue: [Value] = x.map { Value($0) }
+        return self.feed(xValue)
+    }
+
+    public func feed(_ x:[Value]) -> [Value] {
         let outs = self.neurons.map { $0.feed(x) }
         return outs
+    }
+
+    public func parameters() -> [Value] {
+        var params: [Value] = []
+        for neuron in self.neurons {
+            let ps = neuron.parameters()
+            params += ps
+        }
+        return params
     }
 }
 
@@ -49,11 +70,24 @@ public class MLP {
     }
 
     public func feed(_ x:[Double]) -> [Value] {
-        var out: [Value] = []
+        let xValue: [Value] = x.map { Value($0) }
+        return self.feed(xValue)
+    }
 
+    public func feed(_ x:[Value]) -> [Value] {
+        var outs = x
         for layer in self.layers {
-            out = layer.feed(x)
+            outs = layer.feed(outs)
         }
-        return out
+        return outs
+    }
+
+    public func parameters() -> [Value] {
+        var params: [Value] = []
+        for layer in self.layers {
+            let ps = layer.parameters()
+            params += ps
+        }
+        return params
     }
 }
