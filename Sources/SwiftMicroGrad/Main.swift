@@ -300,7 +300,7 @@ public struct SwiftMicroGrad {
         //------------------------------------------- MARK: 07 Neuron, Layer and MLP ------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------
-        
+        /*
         let x = [2.0, 3.0]
         let n = Neuron(2)
         print(n.feed(x).drawDot())
@@ -317,6 +317,72 @@ public struct SwiftMicroGrad {
         print(z)
         z.backward()
         print(z.drawDot())
+        */
+
+
+        //---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------ MARK: 08 NN Training -----------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
         
+        //input
+        let xs = [ 
+                [2.0, 3.0, -1.0],
+                [3.0, -1.0, 0.5],
+                [0.5, 1.0, 1.0],
+                [1.0, 1.0, -1.0]
+                ]
+        //desired outputs
+        let ys = [1.0, -1.0, -1.0, 1.0]
+
+        let n = MLP(3, [4, 4, 1])
+
+        for i in 0...499 {
+            print("\n---------------Loop no \(i+1)")
+
+            //Forward Pass to estimate loss
+            let ydred = xs.map { n.feed($0) }
+            let losses = zip(ydred,ys).map() { ($0[0] - $1)**2 }
+            var loss = losses[0]
+            for i in 1..<losses.count {
+                loss = loss + losses[i]
+            }
+            print("Loss Before Gradient Descent \(loss.data)")
+
+            //Zerograd - important!
+            for p in n.parameters() {
+                p.grad = 0.0
+            }
+
+            //Backward Pass
+            loss.backward()
+            //print("Before Example Grad \(n.layers[0].neurons[0].w[0].grad)")
+            //print("Before Example Data \(n.layers[0].neurons[0].w[0].data)")
+
+            //Gradient Descent
+            for p in n.parameters() {
+                p.data += -0.1 * p.grad
+            }
+
+            //print(" After Example Grad \(n.layers[0].neurons[0].w[0].grad)")
+            //print(" After Example Data \(n.layers[0].neurons[0].w[0].data)")
+        
+            //Forward Pass to re-estimate loss
+            let ydred2 = xs.map { n.feed($0) }
+            let losses2 = zip(ydred2,ys).map() { ($0[0] - $1)**2 }
+            var loss2 = losses2[0]
+            for i in 1..<losses2.count {
+                loss2 = loss2 + losses2[i]
+            }
+            print(" Loss After Gradient Descent \(loss2.data)")
+            print("----------------End loop no \(i+1)")
+
+        }
+
+        print("\n---------------Final prediction")
+        let ydred = xs.map { n.feed($0) }
+        print("Target \(ys)")
+        print("Guess  \(ydred)")
     }
 }
