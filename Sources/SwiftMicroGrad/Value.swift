@@ -166,6 +166,6 @@ public class Value: CustomStringConvertible {
     }
 
     public var description: String {
-        return "Value(data=\(self.data))"
+        return "Value(data=" + String(format:" data %.4f", self.data)
     }
 }

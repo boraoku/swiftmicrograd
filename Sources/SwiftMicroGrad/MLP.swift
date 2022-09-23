@@ -88,10 +88,13 @@ public class MLP {
             }
         }
 
-        print("\nFinal prediction after \(finalLoopNo) loops with loss \(finalLoss)")
         let ydred = xs.map { self.feed($0) }
-        print("Target \(ys)")
-        print("Guess  \(ydred)")
+
+        if verbose {
+            print("\nFinal prediction after \(finalLoopNo) loops with loss \(finalLoss)")
+            print("Target \(ys)")
+            print("Guess  \(ydred)")
+        }
 
     }
 }

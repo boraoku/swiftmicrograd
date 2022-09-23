@@ -1,3 +1,5 @@
+import Foundation
+
 @main
 public struct SwiftMicroGrad {
 
@@ -392,7 +394,7 @@ public struct SwiftMicroGrad {
         //----------------------------------------------- MARK: 09 NN Ready to Use --------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------
-        
+        /*
         //input
         let xs = [ 
                 [2.0, 3.0, -1.0],
@@ -406,6 +408,35 @@ public struct SwiftMicroGrad {
         let n = MLP(3, [4, 4, 1])
 
         n.train(inputs: xs, outputs: ys, loops:100000, stepForGradDescent: 0.05, lossThreshold: 10e-6, verbose: true)
+        */
 
+
+        //---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------- MARK: 10 Locke ---------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
+
+        let xs = [[1.1], [1.5], [3.0], [6.0]] //inputs
+        let ys = [0.25, 0.40, 0.75, 1.0]      //targets
+        
+        print("Training...")
+        let numberOfRuns = 5
+        var results = [Double](repeating: 0.0, count: numberOfRuns)
+        let queue = OperationQueue()
+
+        for i in 0..<numberOfRuns {
+            queue.addOperation { 
+                let n = MLP(1, [4,4,1]) 
+                n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false) 
+                results[i] = n.feed([2.0])[0].data
+            }
+        }
+
+        queue.waitUntilAllOperationsAreFinished()
+
+        print("\nGuesses for Load levels at 2mm Creep Rate: \(results)")
+        let average = results.reduce(0.0, +) / Double(numberOfRuns)
+        print("                                 In Average: " + String(format:"%.4f", average))
     }
 }
