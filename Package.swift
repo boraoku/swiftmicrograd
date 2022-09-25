@@ -6,17 +6,10 @@ import PackageDescription
 let package = Package(
     name: "SwiftMicroGrad",
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        //.package(url: "URL", from: "X.Y.Z"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .executableTarget(
             name: "SwiftMicroGrad",
-            dependencies: []),
-        .testTarget(
-            name: "SwiftMicroGradTests",
             dependencies: []),
     ]
 )
