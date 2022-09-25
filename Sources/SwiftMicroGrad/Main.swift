@@ -437,6 +437,6 @@ public struct SwiftMicroGrad {
 
         print("\nGuesses for Load levels at 2mm Creep Rate: \(results)")
         let average = results.reduce(0.0, +) / Double(numberOfRuns)
-        print("                                 In Average: " + String(format:"%.4f", average))
+        print("                               In Average: " + String(format:"%.4f", average))
     }
 }
