@@ -6,6 +6,14 @@ private func lambda() {
 
 infix operator **
 
+private func expSystem(_ input:Double) -> Double {
+#if os(Linux)
+    return Glibc.exp(input)
+#else
+    return Darwin.exp(input)
+#endif
+}
+
 public class Value: CustomStringConvertible {
     var data: Double
     var grad: Double
@@ -95,7 +103,7 @@ public class Value: CustomStringConvertible {
 
     public func tanh() -> Value {
         let x: Double = self.data
-        let t: Double = ( Darwin.exp(2.0*x) - 1.0 ) / ( Darwin.exp(2.0*x) + 1.0)
+        let t: Double = ( expSystem(2.0*x) - 1.0 ) / ( expSystem(2.0*x) + 1.0)
 
         let out = Value(t , [self], "α") //α stands for tanh
         
@@ -110,7 +118,7 @@ public class Value: CustomStringConvertible {
     public func exp() -> Value {
         let x: Double = self.data
 
-        let out = Value(Darwin.exp(x) , [self], "e") //e stands for exp
+        let out = Value(expSystem(x) , [self], "e") //e stands for exp
         
         func _backward() {
             self.grad += out.data * out.grad
