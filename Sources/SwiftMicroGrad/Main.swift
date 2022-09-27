@@ -420,13 +420,14 @@ public struct SwiftMicroGrad {
         let xs = [[1.1], [1.5], [3.0], [6.0]] //inputs
         let ys = [0.25, 0.40, 0.75, 1.0]      //targets
         
-        print("Training...")
+        print("\nTraining...\n")
         let numberOfRuns = 5
         var results = [Double](repeating: 0.0, count: numberOfRuns)
         let queue = OperationQueue()
 
         for i in 0..<numberOfRuns {
             queue.addOperation { 
+                print("Running MLP \(i+1)/\(numberOfRuns)")
                 let n = MLP(1, [4,4,1]) 
                 n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false) 
                 results[i] = n.feed([2.0])[0].data
@@ -435,8 +436,9 @@ public struct SwiftMicroGrad {
 
         queue.waitUntilAllOperationsAreFinished()
 
-        print("\nGuesses for Load levels at 2mm Creep Rate: \(results)")
         let average = results.reduce(0.0, +) / Double(numberOfRuns)
+        let resultsString = results.map { String(format:"%.4f", $0)  }.joined(separator: ", ")
+        print("\nGuesses for Load levels at 2mm Creep Rate: " + resultsString)
         print("                               In Average: " + String(format:"%.4f", average))
     }
 }
