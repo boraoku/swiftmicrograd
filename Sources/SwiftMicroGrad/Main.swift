@@ -433,13 +433,17 @@ public struct SwiftMicroGrad {
 
         for i in 0..<numberOfRuns {
             queue.addOperation {
-                print("Running MLP \(i+1)/\(numberOfRuns)")
-                let n = MLP(1, [4,4,1])
-                n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
-                results[i] = n.feed([2.0])[0].data
-                for j in 0..<numberOfMids {
-                    let midResult = n.feed([midPoints[j]])[0].data
-                    midPointsResults[i*numberOfMids + j] = midResult
+                
+                autoreleasepool {
+                    print("Running MLP \(i+1)/\(numberOfRuns)")
+                    var n:MLP? = MLP(1, [4,4,1])
+                    n!.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
+                    results[i] = n!.feed([2.0])![0]!.data
+                    for j in 0..<numberOfMids {
+                        let midResult = n!.feed([midPoints[j]])![0]!.data
+                        midPointsResults[i*numberOfMids + j] = midResult
+                    }
+                    n = nil
                 }
             }
         }
