@@ -28,32 +28,31 @@ let ys = [0.25, 0.40, 0.75, 1.0]      //corresponding loads at each creep rate i
 Due to the randomised nature of initial weights for [each Neuron](Sources/SwiftMicroGrad/Neuron.swift)  of the MLP, a multi-thread procedure has been programmed into this example to run multiple instances of MLPs with the same input and the resulting guesses are then averaged at the end:
 
 ```swift
-        let queue = OperationQueue()
+let queue = OperationQueue()
 
-        for i in 0..<numberOfRuns {
-            queue.addOperation {
-                
-                autoreleasepool {
-                    print("Running MLP \(i+1)/\(numberOfRuns)")
-                    var n:MLP? = MLP(1, [4,4,1])
-                    n!.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
-                    results[i] = n!.feed([2.0])![0]!.data
-                    for j in 0..<numberOfMids {
-                        let midResult = n!.feed([midPoints[j]])![0]!.data
-                        midPointsResults[i*numberOfMids + j] = midResult
-                    }
-                    n = nil
-                }
+for i in 0..<numberOfRuns {
+    queue.addOperation {
+        
+        autoreleasepool {
+            print("Running MLP \(i+1)/\(numberOfRuns)")
+            var n:MLP? = MLP(1, [4,4,1])
+            n!.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
+            results[i] = n!.feed([2.0])![0]!.data
+            for j in 0..<numberOfMids {
+                let midResult = n!.feed([midPoints[j]])![0]!.data
+                midPointsResults[i*numberOfMids + j] = midResult
             }
+            n = nil
         }
-
-        queue.waitUntilAllOperationsAreFinished()
+    }
+}
+queue.waitUntilAllOperationsAreFinished()
 let average = results.reduce(0.0, +) / Double(numberOfRuns)
 ```
 
 Here is the load vs creep rate graph together with all the guesses, which fits quite handsomely to the measured trend:
 
-![locke-graph](locke.jpg)
+![locke-graph](locke.png)
 
 
 The above graph is also saved a [Numbers](https://www.apple.com/numbers) [spreadsheet](./locke-creep_rate-estimations.numbers) to this repo.
