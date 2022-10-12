@@ -5,11 +5,18 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftMicroGrad",
-    dependencies: [
+    products: [
+        .library(
+            name: "SwiftMicroGrad",
+            targets: ["SwiftMicroGrad"]),
     ],
+    dependencies: [],
     targets: [
-        .executableTarget(
+        .target(
             name: "SwiftMicroGrad",
             dependencies: []),
+        .testTarget(
+            name: "SwiftMicroGradTests",
+            dependencies: ["SwiftMicroGrad"]),
     ]
 )
