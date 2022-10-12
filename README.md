@@ -4,7 +4,7 @@
 
 [Micrograd by Andrej Karpathy](https://github.com/karpathy/micrograd) rewritten in [Swift](https://github.com/apple/swift) following [Andrej K's excellent Youtube video](https://www.youtube.com/watch?v=VMj-3S1tku0).
 
-To use this library in your own program, simply include all the URL of this package as a dependency in your app or Package.swift file. Please do include the copyright notice and this permission notice provided in the [LICENSE](LICENSE). Thank you.
+To use this library in your own program, simply use the URL of this package as a [dependency in XCode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app) or your Package.swift file. Please do include the copyright notice and this permission notice provided in the [LICENSE](LICENSE). Thank you.
 
 ### Run the test to see some action
 
