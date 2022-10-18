@@ -33,22 +33,28 @@ Due to the randomised nature of initial weights for [each Neuron](Sources/SwiftM
 let queue = OperationQueue()
 
 for i in 0..<numberOfRuns {
+
     queue.addOperation {
+    
+        print("Running MLP \(i+1)/\(numberOfRuns)")
         
-        autoreleasepool {
-            print("Running MLP \(i+1)/\(numberOfRuns)")
-            var n:MLP? = MLP(1, [4,4,1])
-            n!.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
-            results[i] = n!.feed([2.0])![0]!.data
-            for j in 0..<numberOfMids {
-                let midResult = n!.feed([midPoints[j]])![0]!.data
-                midPointsResults[i*numberOfMids + j] = midResult
-            }
-            n = nil
+        let n:MLP = MLP(1, [4,4,1])
+        
+        n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
+        
+        results[i] = n.feed([2.0])[0].data
+        
+        for j in 0..<numberOfMids {
+            let midResult = n.feed([midPoints[j]])[0].data
+            midPointsResults[i*numberOfMids + j] = midResult
         }
+        
     }
+    
 }
+
 queue.waitUntilAllOperationsAreFinished()
+
 let average = results.reduce(0.0, +) / Double(numberOfRuns)
 ```
 
