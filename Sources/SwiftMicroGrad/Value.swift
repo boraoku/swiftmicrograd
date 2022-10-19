@@ -119,12 +119,12 @@ public func exp(_ lhs: Value) -> Value {
 }
 
 public class Value: CustomStringConvertible {
-    var data: Double
-    var grad: Double
-    var prev: [Value]
-    var op: String
-    var label: String
-    var _backward: () -> () = lambda
+    public var data: Double
+    public var grad: Double
+    public var prev: [Value]
+    public var op: String
+    public var label: String
+    public var _backward: () -> () = lambda
     var topoVisited: Bool = false
 
     public init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "", _ grad: Double = 0.0 ) {

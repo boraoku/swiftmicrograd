@@ -1,7 +1,7 @@
 import Foundation
 
 public class Layer {
-    var neurons: [Neuron]
+    public var neurons: [Neuron]
     
     public init(_ nin: Int, _ nout: Int) {
         self.neurons = (0..<nout).map { _ in Neuron(nin) }

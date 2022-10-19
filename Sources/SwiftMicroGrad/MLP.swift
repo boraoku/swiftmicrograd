@@ -1,8 +1,8 @@
 import Foundation
 
 public class MLP {
-    var sz: [Int]
-    var layers: [Layer]
+    public var sz: [Int]
+    public var layers: [Layer]
     
     public init(_ nin: Int, _ nouts: [Int]) {
         self.sz = [nin] + nouts

@@ -1,8 +1,8 @@
 import Foundation
 
 public class Neuron {
-    var w: [Value]  //weights
-    var b: Value    //bias
+    public var w: [Value]  //weights
+    public var b: Value    //bias
     
     public init(_ nin: Int) {
         self.w = (0..<nin).map { _ in Value(Double.random(in: -1.0...1.0)) }
