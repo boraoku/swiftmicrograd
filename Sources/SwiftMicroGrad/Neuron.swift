@@ -4,7 +4,7 @@ public class Neuron {
     var w: [Value]  //weights
     var b: Value    //bias
     
-    init(_ nin: Int) {
+    public init(_ nin: Int) {
         self.w = (0..<nin).map { _ in Value(Double.random(in: -1.0...1.0)) }
         self.b = Value(Double.random(in: -1.0...1.0))
     }

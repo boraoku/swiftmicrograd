@@ -4,7 +4,7 @@ public class MLP {
     var sz: [Int]
     var layers: [Layer]
     
-    init(_ nin: Int, _ nouts: [Int]) {
+    public init(_ nin: Int, _ nouts: [Int]) {
         self.sz = [nin] + nouts
         self.layers = []
         for i in 0..<nouts.count {

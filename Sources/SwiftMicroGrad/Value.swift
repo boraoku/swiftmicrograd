@@ -127,7 +127,7 @@ public class Value: CustomStringConvertible {
     var _backward: () -> () = lambda
     var topoVisited: Bool = false
 
-    init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "", _ grad: Double = 0.0 ) {
+    public init(_ data: Double, _ children:[Value] = [], _ op:String = "", label:String = "", _ grad: Double = 0.0 ) {
         self.data = data
         self.grad = grad
         self.prev = children
