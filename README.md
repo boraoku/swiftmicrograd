@@ -16,9 +16,7 @@ swift test
 
 ### Note on "Real World Example" aka Locke
 
-The second test function in [SwiftMicroGradTests.swift](Tests/SwiftMicroGradTests/SwiftMicroGradTests.swift) demonstrates a real world example of a [Multilayer Perceptron](https://en.wikipedia.org/wiki/Multilayer_perceptron) 
-
-(aka MLP) created by micrograd for a simple curve fitting exercise. This said curve is for a load vs [creep rate](https://en.wikipedia.org/wiki/Creep_(deformation)) graph for a [ground anchor or tieback](https://en.wikipedia.org/wiki/Tieback_(geotechnical)). A set of creep rate measurements and corresponding anchor loads are used to train an MLP, and then the MLP is used to produce a guess for the corresponding anchor load at the critical creep rate of 2mm at which the ground anchor is deemed to reach its geotechnical pull out resistance aka its [Ultimate Limit State](https://en.wikipedia.org/wiki/Limit_state_design#Ultimate_limit_state_(ULS)). 
+The second test function in [SwiftMicroGradTests.swift](Tests/SwiftMicroGradTests/SwiftMicroGradTests.swift) demonstrates a real world example of a [Multilayer Perceptron](https://en.wikipedia.org/wiki/Multilayer_perceptron) (aka MLP) created by micrograd for a simple curve fitting exercise. This said curve is for a load vs [creep rate](https://en.wikipedia.org/wiki/Creep_(deformation)) graph for a [ground anchor or tieback](https://en.wikipedia.org/wiki/Tieback_(geotechnical)). A set of creep rate measurements and corresponding anchor loads are used to train an MLP, and then the MLP is used to produce a guess for the corresponding anchor load at the critical creep rate of 2mm at which the ground anchor is deemed to reach its geotechnical pull out resistance aka its [Ultimate Limit State](https://en.wikipedia.org/wiki/Limit_state_design#Ultimate_limit_state_(ULS)). 
 
 Input data for the MLP is defined by the following lines in the example code:
 
