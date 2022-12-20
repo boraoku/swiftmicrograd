@@ -21,7 +21,7 @@ The second test function in [SwiftMicroGradTests.swift](Tests/SwiftMicroGradTest
 Input data for the MLP is defined by the following lines in the example code:
 
 ```swift
-let xs = [[1.1], [1.5], [3.0], [6.0]] //measured creep rates
+let xs = [1.1, 1.5, 3.0, 6.0]         //measured creep rates
 let ys = [0.25, 0.40, 0.75, 1.0]      //corresponding loads at each creep rate is measured
 ```
 
