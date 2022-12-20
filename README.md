@@ -25,38 +25,46 @@ let xs = [[1.1], [1.5], [3.0], [6.0]] //measured creep rates
 let ys = [0.25, 0.40, 0.75, 1.0]      //corresponding loads at each creep rate is measured
 ```
 
-Due to the randomised nature of initial weights for [each Neuron](Sources/SwiftMicroGrad/Neuron.swift)  of the MLP, a multi-thread procedure has been programmed into this example to run multiple instances of MLPs with the same input and the resulting guesses are then averaged at the end:
+Due to the randomised nature of initial weights for [each Neuron](Sources/SwiftMicroGrad/Neuron.swift) of the MLP, a multi-thread procedure has been programmed into this example to run multiple instances of MLPs with the same input and the resulting guesses are then averaged at the end:
 
 ```swift
+let targets = [1.0, 2.0, 4.0, 5.0, 8.0]
+
+print("\nTraining...\n")
+let numberOfRuns = 5
+var results: [[Double]] = []
+
+for _ in 0 ..< targets.count {
+    let innerArray = [Double](repeating: 0.0, count: numberOfRuns)
+    results.append(innerArray)
+}
 let queue = OperationQueue()
 
 for i in 0..<numberOfRuns {
-
     queue.addOperation {
-    
-        print("Running MLP \(i+1)/\(numberOfRuns)")
         
-        let n:MLP = MLP(1, [4,4,1])
-        
-        n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
-        
-        results[i] = n.feed([2.0])[0].data
-        
-        for j in 0..<numberOfMids {
-            let midResult = n.feed([midPoints[j]])[0].data
-            midPointsResults[i*numberOfMids + j] = midResult
+        autoreleasepool {
+            print("Running MLP \(i+1)/\(numberOfRuns)")
+            let n:MLP = MLP(1, [ys.count, ys.count, 1])
+            n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: true, concurrencyCount: i+1)
+            var j = 0
+            for target in targets {
+                results[j][i] = n.feed([target])[0].data
+                j += 1
+            }
         }
-        
     }
-    
 }
 
 queue.waitUntilAllOperationsAreFinished()
 
-let average = results.reduce(0.0, +) / Double(numberOfRuns)
+var averageResults: [Double] = []
+for i in 0..<targets.count {
+    averageResults.append(results[i].reduce(0.0, +) / Double(numberOfRuns))
+...
 ```
 
-Here is the load vs creep rate graph together with all the guesses, which fits quite handsomely to the measured trend:
+Here is the load vs creep rate graph together with all results fitting quite handsomely on a curvature:
 
 ![locke-graph](locke.png)
 

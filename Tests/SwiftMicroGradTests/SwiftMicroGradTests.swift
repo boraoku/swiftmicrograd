@@ -10,17 +10,18 @@ final class SwiftMicroGradTests: XCTestCase {
     func testCurveFitting() throws {
         
         let xs = [[1.1], [1.5], [3.0], [6.0]] //inputs
-        let ys = [0.25, 0.40, 0.75, 1.0]      //targets
+        let ys = [0.25, 0.40, 0.75, 1.0]      //outputs
+        
+        let targets = [1.0, 2.0, 4.0, 5.0, 8.0]
         
         print("\nTraining...\n")
         let numberOfRuns = 5
-        let numberOfMids = xs.count-1
-        var results = [Double](repeating: 0.0, count: numberOfRuns)
-        var midPoints:[Double] = []
-        for i in 0..<numberOfMids {
-            midPoints.append((xs[i][0] + xs[i+1][0]) / 2.0)
+        var results: [[Double]] = []
+
+        for _ in 0 ..< targets.count {
+            let innerArray = [Double](repeating: 0.0, count: numberOfRuns)
+            results.append(innerArray)
         }
-        var midPointsResults = [Double](repeating: 0.0, count: numberOfRuns*numberOfMids)
         let queue = OperationQueue()
 
         for i in 0..<numberOfRuns {
@@ -28,12 +29,12 @@ final class SwiftMicroGradTests: XCTestCase {
                 
                 autoreleasepool {
                     print("Running MLP \(i+1)/\(numberOfRuns)")
-                    let n:MLP = MLP(1, [4,4,1])
-                    n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: false)
-                    results[i] = n.feed([2.0])[0].data
-                    for j in 0..<numberOfMids {
-                        let midResult = n.feed([midPoints[j]])[0].data
-                        midPointsResults[i*numberOfMids + j] = midResult
+                    let n:MLP = MLP(1, [ys.count, ys.count, 1])
+                    n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: true, concurrencyCount: i+1)
+                    var j = 0
+                    for target in targets {
+                        results[j][i] = n.feed([target])[0].data
+                        j += 1
                     }
                 }
             }
@@ -41,26 +42,15 @@ final class SwiftMicroGradTests: XCTestCase {
 
         queue.waitUntilAllOperationsAreFinished()
 
-        let average = results.reduce(0.0, +) / Double(numberOfRuns)
-        
-        var midPointsAverage:[Double] = []
-        for i in 0..<numberOfMids {
-            var midPointTotal: Double = 0.0
-            for j in 0..<numberOfRuns {
-                let midPointResult = midPointsResults[j*numberOfMids + i]
-                midPointTotal += midPointResult
-            }
-            let midAverage = midPointTotal/Double(numberOfRuns)
-            midPointsAverage.append(midAverage)
+        var averageResults: [Double] = []
+        for i in 0..<targets.count {
+            averageResults.append(results[i].reduce(0.0, +) / Double(numberOfRuns))
+            
+            let resultsString = results[i].map { String(format:"%.4f", $0)  }.joined(separator: ", ")
+            print("\nGuesses for Load levels at \(String(format:"%.4f", targets[i]))mm Creep Rate: " + resultsString)
+            print("                               In Average: " + String(format:"%.4f", averageResults[i]))
         }
         
-        let resultsString = results.map { String(format:"%.4f", $0)  }.joined(separator: ", ")
-        print("\nGuesses for Load levels at 2mm Creep Rate: " + resultsString)
-        print("                               In Average: " + String(format:"%.4f", average))
-        for i in 0..<numberOfMids {
-            print("           Mid Point at " + String(format:"%.2f", midPoints[i]) + "mm Creep Rate: " + String(format:"%.4f", midPointsAverage[i]))
-        }
-        
-        XCTAssertEqual(average*100, 53.0, accuracy: 1.0)
+        XCTAssertEqual(averageResults[1]*100, 53.0, accuracy: 1.0) //at 2mm, a good result shall be within ±1 of 53
     }
 }
