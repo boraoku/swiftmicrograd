@@ -9,7 +9,7 @@ final class SwiftMicroGradTests: XCTestCase {
     
     func testCurveFitting() throws {
         
-        let xs = [[1.1], [1.5], [3.0], [6.0]] //inputs
+        let xs = [1.1, 1.5, 3.0, 6.0]         //inputs
         let ys = [0.25, 0.40, 0.75, 1.0]      //outputs
         
         let targets = [1.0, 2.0, 4.0, 5.0, 8.0]

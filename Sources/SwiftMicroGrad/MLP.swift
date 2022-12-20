@@ -39,9 +39,16 @@ public class MLP {
         return params
     }
 
-    public func train(inputs xs:[[Double]], outputs ys:[Double], 
+    public func train(inputs xs_s:[Double], outputs ys:[Double],
                       loops: Int = 1000, stepForGradDescent: Double = 0.1, lossThreshold: Double = 0.0001, verbose: Bool = false, concurrencyCount: Int = -1)
     {
+        
+        //process xs_s:[Double] to xs:[[Double]]
+        var xs: [[Double]] = []
+        for x in xs_s {
+            xs.append([x])
+        }
+        
         var finalLoss: Double = 1000.0
         var finalLoopNo = loops
 
