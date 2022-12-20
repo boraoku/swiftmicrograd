@@ -23,19 +23,16 @@ final class SwiftMicroGradTests: XCTestCase {
             results.append(innerArray)
         }
         let queue = OperationQueue()
-
+        
         for i in 0..<numberOfRuns {
             queue.addOperation {
-                
-                autoreleasepool {
-                    print("Running MLP \(i+1)/\(numberOfRuns)")
-                    let n:MLP = MLP(1, [ys.count, ys.count, 1])
-                    n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: true, concurrencyCount: i+1)
-                    var j = 0
-                    for target in targets {
-                        results[j][i] = n.feed([target])[0].data
-                        j += 1
-                    }
+                print("Running MLP \(i+1)/\(numberOfRuns)")
+                let n:MLP = MLP(1, [ys.count, ys.count, 1])
+                n.train(inputs: xs, outputs: ys, loops:10000, stepForGradDescent: 0.05, lossThreshold: 10e-5, verbose: true, concurrencyCount: i+1)
+                var j = 0
+                for target in targets {
+                    results[j][i] = n.feed([target])[0].data
+                    j += 1
                 }
             }
         }
