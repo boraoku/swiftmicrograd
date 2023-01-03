@@ -140,6 +140,20 @@ public class Value: CustomStringConvertible {
         //print("Value dealloc")
     }
     
+    public func relu() -> Value {
+
+        let out: Value = Value(max(0.0, self.data) , [self], "ReLU")
+        
+        let _backward = {
+            [unowned out] in
+            self.grad += (self.data > 0.0 ? 1.0 : 0.0) * out.grad
+        }
+        
+        out._backward = _backward
+        
+        return out
+    }
+    
     public func backward() {
         
         var topo :[Value] = []

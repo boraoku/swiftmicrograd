@@ -2,9 +2,11 @@ import Foundation
 
 public class Layer {
     public var neurons: [Neuron]
+    public var a: ActivationFunction
     
-    public init(_ nin: Int, _ nout: Int) {
-        self.neurons = (0..<nout).map { _ in Neuron(nin) }
+    public init(_ nin: Int, _ nout: Int, a:ActivationFunction) {
+        self.a = a
+        self.neurons = (0..<nout).map { _ in Neuron(nin, a:a) }
     }
     
     deinit {

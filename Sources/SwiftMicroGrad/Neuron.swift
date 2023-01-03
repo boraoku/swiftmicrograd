@@ -1,12 +1,20 @@
 import Foundation
 
+public enum ActivationFunction {
+    case none
+    case tanh
+    case ReLU
+}
+
 public class Neuron {
     public var w: [Value]  //weights
     public var b: Value    //bias
+    public var a: ActivationFunction
     
-    public init(_ nin: Int) {
+    public init(_ nin: Int, a: ActivationFunction) {
         self.w = (0..<nin).map { _ in Value(Double.random(in: -1.0...1.0)) }
         self.b = Value(Double.random(in: -1.0...1.0))
+        self.a = a
     }
     
     deinit {
@@ -24,10 +32,21 @@ public class Neuron {
         for (wi, xi) in zip(self.w, x) {
             sumproduct = sumproduct + wi * xi
         }
-
+        
         let act = sumproduct + self.b
-        let out = tanh(act)
-        return out
+        
+        switch a {
+        case .none:
+            return act
+            
+        case .ReLU:
+            let out = act.relu()
+            return out
+            
+        case .tanh:
+            let out = tanh(act)
+            return out
+        }
     }
 
     public func parameters() -> [Value] {
