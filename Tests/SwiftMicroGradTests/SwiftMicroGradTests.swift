@@ -35,12 +35,20 @@ final class SwiftMicroGradTests: XCTestCase {
         
         switch selectedData() {
         case .creepData:
+            /*
             xinput = [1.1, 1.5, 3.0, 6.0]
             yinput = [25.0, 40.0, 75.0, 100.0]
             targets = [1.0, 2.0, 4.0, 5.0, 8.0]
             checkAtIndex = 1
             checkValue = 54.0
             checkAccuracy = 5.0
+            */
+            xinput = [0.558, 0.836, 1.049, 1.284, 2.5, 3.000, 4.064]
+            yinput = [40.0, 55.0, 70.0, 85.0, 90.0, 95.0, 100.0]
+            targets = [2.0]
+            checkAtIndex = 0
+            checkValue = 87.0
+            checkAccuracy = 1.0
             
         case .worldPopulation:
             xinput = [0.600, 1.000, 2.000, 2.500, 5.000, 7.700, 9.700, 10.900]
@@ -52,7 +60,7 @@ final class SwiftMicroGradTests: XCTestCase {
         }
         
         print("\nTraining...\n")
-        let numberOfRuns = 1
+        let numberOfRuns = 5
         var results: [[Double]] = []
 
         for _ in 0 ..< targets.count {
@@ -64,12 +72,12 @@ final class SwiftMicroGradTests: XCTestCase {
         for run in 0..<numberOfRuns {
             queue.addOperation {
                 print("Running MLP \(run+1)/\(numberOfRuns)")
-                let n1:MLP = MLP(1, [yinput.count], .tanh)
-                let n2:MLP = MLP(yinput.count, [1], .none)
+                let activationFunction = ActivationFunction.tanh
+                let n:MLP = MLP(1, [yinput.count, 1], activationFunction)
+                print("with \(activationFunction) as the Activation Function")
                 
-                //n.train(inputs: xs, outputs: ys, loops: 50000, stepForGradDescent: 0.01, lossThreshold: 0.0001, normalise: true, verbose: true, concurrencyCount: i+1)
                 let verbose = true
-                let loops = 50000
+                let loops = 25000
                 let stepForGradDescent = 0.01
                 
                 //normalise X and Y values using Mean and Standard Deviation
@@ -97,17 +105,9 @@ final class SwiftMicroGradTests: XCTestCase {
                 for i in 0...loops - 1 {
                     
                     //Forward Pass to estimate loss
-                    //NN1 with ReLU
-                    var ydred = xs.map { n1.feed($0) }
-                    var losses = zip(ydred,ys).map() { ($0[0] - $1)**2 }
+                    let ydred = xs.map { n.feed($0) }
+                    let losses = zip(ydred,ys).map() { ($0[0] - $1)**2 }
                     var loss = losses[0]
-                    for i in 1..<losses.count {
-                        loss = loss + losses[i]
-                    }
-                    //NN2
-                    ydred = ydred.map { n2.feed($0) }
-                    losses = zip(ydred,ys).map() { ($0[0] - $1)**2 }
-                    loss = losses[0]
                     for i in 1..<losses.count {
                         loss = loss + losses[i]
                     }
@@ -119,11 +119,8 @@ final class SwiftMicroGradTests: XCTestCase {
                         print("\n\(concurrency) Loop no \(i+1)/\(loops): Loss \(loss.data)")
                     }
                     
-                    //Zerograd - important!
-                    for p in n1.parameters() {
-                        p.grad = 0.0
-                    }
-                    for p in n2.parameters() {
+                    //Zerograd
+                    for p in n.parameters() {
                         p.grad = 0.0
                     }
                     
@@ -131,10 +128,7 @@ final class SwiftMicroGradTests: XCTestCase {
                     loss.backward()
                     
                     //Gradient Descent
-                    for p in n1.parameters() {
-                        p.data += -stepForGradDescent * p.grad
-                    }
-                    for p in n2.parameters() {
+                    for p in n.parameters() {
                         p.data += -stepForGradDescent * p.grad
                     }
                     
@@ -145,12 +139,9 @@ final class SwiftMicroGradTests: XCTestCase {
                 }
                 
                 let ydred = xs.map({
-                    //self.outputFor($0)
-                    
-                    //normalise X value
-                    let xValue = [Value( ($0[0] - Xmean) / Xstd )]
-                    let resultN1 = n1.feed([xValue[0].data])
-                    let resultNN = n2.feed([resultN1[0].data])[0].data
+
+                    //use X value directly since xs is already normalised above to a [[Double]]
+                    let resultNN = n.feed([$0[0]])[0].data
                     
                     //return denormalized value
                     return resultNN * Ystd + Ymean
@@ -169,8 +160,7 @@ final class SwiftMicroGradTests: XCTestCase {
                     //results[j][i] = n.outputFor(target)
                     //normalise X value
                     let xValue = [Value( (target - Xmean) / Xstd )]
-                    let resultN1 = n1.feed([xValue[0].data])
-                    let resultNN = n2.feed([resultN1[0].data])[0].data
+                    let resultNN = n.feed([xValue[0].data])[0].data
                     
                     //return denormalized value
                     results[j][run] = resultNN * Ystd + Ymean
