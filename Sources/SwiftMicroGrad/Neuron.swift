@@ -40,7 +40,7 @@ public class Neuron {
             return act
             
         case .ReLU:
-            let out = act.relu()
+            let out = relu(act)
             return out
             
         case .tanh:

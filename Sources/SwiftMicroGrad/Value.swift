@@ -103,6 +103,20 @@ public func tanh(_ lhs: Value) -> Value {
     return out
 }
 
+public func relu(_ lhs: Value) -> Value {
+
+    let out: Value = Value(max(0.0, lhs.data) , [lhs], "ReLU")
+    
+    let _backward = {
+        [unowned out] in
+        lhs.grad += (lhs.data > 0.0 ? 1.0 : 0.0) * out.grad
+    }
+    
+    out._backward = _backward
+    
+    return out
+}
+
 public func exp(_ lhs: Value) -> Value {
     
     let x: Double = lhs.data
@@ -138,20 +152,6 @@ public class Value: CustomStringConvertible {
     deinit {
         prev.removeAll()
         //print("Value dealloc")
-    }
-    
-    public func relu() -> Value {
-
-        let out: Value = Value(max(0.0, self.data) , [self], "ReLU")
-        
-        let _backward = {
-            [unowned out] in
-            self.grad += (self.data > 0.0 ? 1.0 : 0.0) * out.grad
-        }
-        
-        out._backward = _backward
-        
-        return out
     }
     
     public func backward() {
