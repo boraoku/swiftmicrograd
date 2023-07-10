@@ -14,8 +14,8 @@ final class SwiftMicroGradTests: XCTestCase {
     
     func selectedData() -> TestData {
         //MARK: Select the test data here for curve fitting test below
-        //return .worldPopulation
-        return .creepData
+        return .worldPopulation
+        //return .creepData
     }
 
     func meanAndStd(values: [Double]) -> (mean: Double, std: Double) {
@@ -183,6 +183,7 @@ final class SwiftMicroGradTests: XCTestCase {
         
         print("\nFor Target Inputs \(targets.map { String(format:"%.4f", $0)  }.joined(separator: ", "))")
         print("Average Results \(averageResults.map { String(format:"%.4f", $0)  }.joined(separator: ", "))")
+        print("Line-by-line Results:\n\(averageResults.map { String(format:"%.4f", $0)  }.joined(separator: "\n"))")
         
         XCTAssertEqual(averageResults[checkAtIndex], checkValue, accuracy: checkAccuracy)
     }
